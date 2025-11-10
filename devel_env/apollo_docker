@@ -1,0 +1,22 @@
+# Start with a miniconda base image
+FROM continuumio/miniconda3:latest
+
+# Copy the environment file
+COPY apollo.yml .
+
+# Create the conda environment
+RUN conda env create -f environment.yml && \
+    # Cleanup conda cache to reduce image size
+    conda clean -afy
+
+# Make RUN commands use the new environment
+SHELL ["conda", "run", "-n", "your_env_name", "/bin/bash", "-c"]
+
+# Set the working directory
+WORKDIR /app
+
+# Copy your application files
+COPY . /app
+
+# Set the default command
+CMD ["conda", "run", "-n", "your_env_name", "python", "your_script.py"]
